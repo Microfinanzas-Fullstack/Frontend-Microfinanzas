@@ -1,0 +1,230 @@
+/**
+ * Template del componente Dashboard
+ * Muestra el resumen financiero con cards y gráfico de pastel
+ */
+
+<!-- Contenedor principal del dashboard -->
+<div class="dashboard-container p-6 bg-gray-50 min-h-screen">
+  
+  <!-- Encabezado del dashboard -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Dashboard Financiero</h1>
+    
+    <!-- Botón para refrescar datos -->
+    <button 
+      (click)="refresh()" 
+      class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition"
+      [disabled]="isLoading()">
+      <mat-icon>refresh</mat-icon>
+      <span>Actualizar</span>
+    </button>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="isLoading()" class="flex justify-center items-center h-64">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p>{{ errorMessage() }}</p>
+  </div>
+
+  <!-- Contenido del dashboard -->
+  <div *ngIf="!isLoading() && !errorMessage()">
+    
+    <!-- Sección: Resumen Financiero con Cards -->
+    <section class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Resumen Financiero</h2>
+      
+      <!-- Grid de cards responsive -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Card: Total Ingresos -->
+        <mat-card class="shadow-lg hover:shadow-xl transition">
+          <mat-card-header>
+            <div class="flex items-center gap-3 w-full">
+              <div class="p-3 bg-green-100 rounded-full">
+                <mat-icon class="text-green-600">trending_up</mat-icon>
+              </div>
+              <div>
+                <mat-card-title class="text-sm text-gray-600">Total Ingresos</mat-card-title>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content class="pt-4">
+            <p class="text-3xl font-bold text-green-600">
+              {{ formatCurrency(financialSummary().totalIncome, financialSummary().currency) }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card: Total Gastos -->
+        <mat-card class="shadow-lg hover:shadow-xl transition">
+          <mat-card-header>
+            <div class="flex items-center gap-3 w-full">
+              <div class="p-3 bg-red-100 rounded-full">
+                <mat-icon class="text-red-600">trending_down</mat-icon>
+              </div>
+              <div>
+                <mat-card-title class="text-sm text-gray-600">Total Gastos</mat-card-title>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content class="pt-4">
+            <p class="text-3xl font-bold text-red-600">
+              {{ formatCurrency(financialSummary().totalExpenses, financialSummary().currency) }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card: Balance -->
+        <mat-card class="shadow-lg hover:shadow-xl transition">
+          <mat-card-header>
+            <div class="flex items-center gap-3 w-full">
+              <div class="p-3 bg-blue-100 rounded-full">
+                <mat-icon class="text-blue-600">account_balance</mat-icon>
+              </div>
+              <div>
+                <mat-card-title class="text-sm text-gray-600">Balance</mat-card-title>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content class="pt-4">
+            <p class="text-3xl font-bold" 
+               [class.text-green-600]="financialSummary().balance >= 0"
+               [class.text-red-600]="financialSummary().balance < 0">
+              {{ formatCurrency(financialSummary().balance, financialSummary().currency) }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card: Suscripciones Activas -->
+        <mat-card class="shadow-lg hover:shadow-xl transition">
+          <mat-card-header>
+            <div class="flex items-center gap-3 w-full">
+              <div class="p-3 bg-purple-100 rounded-full">
+                <mat-icon class="text-purple-600">subscriptions</mat-icon>
+              </div>
+              <div>
+                <mat-card-title class="text-sm text-gray-600">Suscripciones</mat-card-title>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content class="pt-4">
+            <p class="text-3xl font-bold text-purple-600">
+              {{ formatCurrency(subscriptionSummary().totalMonthlyAmount, subscriptionSummary().currency) }}
+            </p>
+            <p class="text-sm text-gray-500 mt-2">
+              {{ subscriptionSummary().activeCount }} activas
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </section>
+
+    <!-- Sección: Gráfico de Gastos por Categoría -->
+    <section class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Gastos por Categoría</h2>
+      
+      <mat-card class="shadow-lg">
+        <mat-card-content>
+          
+          <!-- Mensaje si no hay gastos -->
+          <div *ngIf="expenseSummary().length === 0" class="text-center py-12 text-gray-500">
+            <mat-icon class="text-6xl mb-4">pie_chart</mat-icon>
+            <p class="text-lg">No hay gastos registrados</p>
+            <p class="text-sm">Comienza agregando transacciones para ver el análisis</p>
+          </div>
+
+          <!-- Gráfico de pastel -->
+          <div *ngIf="expenseSummary().length > 0" class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Contenedor del gráfico -->
+            <div class="flex-1" style="height: 400px;">
+              <canvas 
+                baseChart
+                [data]="pieChartData()"
+                [options]="pieChartOptions"
+                type="pie">
+              </canvas>
+            </div>
+
+            <!-- Tabla con detalles de categorías -->
+            <div class="flex-1">
+              <h3 class="font-semibold text-gray-700 mb-3">Detalle por Categoría</h3>
+              <div class="overflow-auto max-h-96">
+                <table class="w-full text-sm">
+                  <thead class="bg-gray-100">
+                    <tr>
+                      <th class="text-left p-2">Categoría</th>
+                      <th class="text-right p-2">Monto</th>
+                      <th class="text-right p-2">%</th>
+                      <th class="text-right p-2">Transacciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let category of expenseSummary()" class="border-b hover:bg-gray-50">
+                      <td class="p-2 font-medium">{{ category.category }}</td>
+                      <td class="p-2 text-right">
+                        {{ formatCurrency(category.totalAmount, financialSummary().currency) }}
+                      </td>
+                      <td class="p-2 text-right">{{ category.percentage.toFixed(1) }}%</td>
+                      <td class="p-2 text-right text-gray-600">{{ category.transactionCount }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- Sección: Estadísticas Adicionales -->
+    <section>
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Estadísticas</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Total de transacciones -->
+        <mat-card class="shadow-lg">
+          <mat-card-content class="text-center py-6">
+            <mat-icon class="text-5xl text-gray-600 mb-2">receipt_long</mat-icon>
+            <p class="text-3xl font-bold text-gray-800">{{ financialSummary().transactionCount }}</p>
+            <p class="text-sm text-gray-600 mt-2">Transacciones Totales</p>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Promedio de gasto -->
+        <mat-card class="shadow-lg">
+          <mat-card-content class="text-center py-6">
+            <mat-icon class="text-5xl text-orange-600 mb-2">calculate</mat-icon>
+            <p class="text-3xl font-bold text-gray-800">
+              {{ formatCurrency(
+                  financialSummary().totalExpenses / (financialSummary().transactionCount || 1), 
+                  financialSummary().currency
+                ) 
+              }}
+            </p>
+            <p class="text-sm text-gray-600 mt-2">Promedio por Transacción</p>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Categorías únicas -->
+        <mat-card class="shadow-lg">
+          <mat-card-content class="text-center py-6">
+            <mat-icon class="text-5xl text-teal-600 mb-2">category</mat-icon>
+            <p class="text-3xl font-bold text-gray-800">{{ expenseSummary().length }}</p>
+            <p class="text-sm text-gray-600 mt-2">Categorías de Gastos</p>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </section>
+
+  </div>
+
+</div>

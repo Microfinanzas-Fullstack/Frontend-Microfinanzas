@@ -1,0 +1,74 @@
+/**
+ * Estilos específicos del componente Dashboard
+ * Complementa las clases de Tailwind CSS con estilos personalizados
+ */
+
+/* Contenedor principal del dashboard */
+.dashboard-container {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Animación de fade in al cargar el componente */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilo para las tarjetas de Material */
+mat-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+mat-card-header {
+  padding: 16px;
+  background-color: transparent;
+}
+
+mat-card-content {
+  padding: 0 16px 16px;
+}
+
+/* Asegurar que los iconos de Material tengan el tamaño correcto */
+mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+/* Hover effect para las cards */
+mat-card:hover {
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* Estilo para la tabla de categorías */
+table {
+  font-family: 'Roboto', sans-serif;
+}
+
+table thead {
+  position: sticky;
+  top: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+}
