@@ -1,0 +1,85 @@
+<div class="container mx-auto p-6 max-w-2xl">
+    <div class="mb-6">
+        <button mat-button routerLink="/transactions">
+            <mat-icon>arrow_back</mat-icon>
+            Volver
+        </button>
+    </div>
+
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>
+                {{ isEditMode ? 'Editar' : 'Nueva' }} Transacción
+            </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="pt-6">
+            <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+
+                <!-- Tipo de Transacción -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Tipo</mat-label>
+                    <mat-select formControlName="type">
+                        <mat-option value="INCOME">Ingreso</mat-option>
+                        <mat-option value="EXPENSE">Gasto</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="transactionForm.get('type')?.hasError('required')">Requerido</mat-error>
+                </mat-form-field>
+
+                <!-- Monto -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Monto</mat-label>
+                    <input matInput type="number" formControlName="amount" min="0">
+                    <span matPrefix>$&nbsp;</span>
+                    <mat-error *ngIf="transactionForm.get('amount')?.hasError('required')">Requerido</mat-error>
+                    <mat-error *ngIf="transactionForm.get('amount')?.hasError('min')">Debe ser mayor a 0</mat-error>
+                </mat-form-field>
+
+                <!-- Categoría -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Categoría</mat-label>
+                    <input matInput formControlName="category" [matAutocomplete]="auto">
+                    <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option *ngFor="let cat of filteredCategories | async" [value]="cat">
+                            {{cat}}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="transactionForm.get('category')?.hasError('required')">Requerido</mat-error>
+                </mat-form-field>
+
+                <!-- Fecha -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Fecha</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="transactionDate">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-error
+                        *ngIf="transactionForm.get('transactionDate')?.hasError('required')">Requerido</mat-error>
+                </mat-form-field>
+
+                <!-- Descripción -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Descripción (Opcional)</mat-label>
+                    <textarea matInput formControlName="description" rows="3"></textarea>
+                </mat-form-field>
+
+                <!-- Botones -->
+                <div class="flex justify-end gap-2 mt-4">
+                    <button mat-button type="button" routerLink="/transactions" [disabled]="isLoading">
+                        Cancelar
+                    </button>
+                    <button mat-raised-button color="primary" type="submit"
+                        [disabled]="transactionForm.invalid || isLoading">
+                        <mat-spinner diameter="20" *ngIf="isLoading" class="inline-block mr-2"></mat-spinner>
+                        Guardar
+                    </button>
+                </div>
+
+                <div *ngIf="errorMessage" class="text-red-600 mt-2 text-sm">
+                    {{ errorMessage }}
+                </div>
+
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>

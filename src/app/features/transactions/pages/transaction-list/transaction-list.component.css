@@ -1,0 +1,9 @@
+
+/* Transaction List Styles */
+.mat-column-actions {
+  width: 120px;
+}
+
+.mat-column-amount {
+  font-weight: bold;
+}

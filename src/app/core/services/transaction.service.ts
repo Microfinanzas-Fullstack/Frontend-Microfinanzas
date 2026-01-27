@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, map } from 'rxjs';
-import { 
-  TransactionDTO, 
+import {
+  TransactionDTO,
   CreateTransactionDTO,
   TransactionType,
   CategorySummary,
@@ -42,7 +42,7 @@ export class TransactionService {
   private transactionsSubject = new BehaviorSubject<TransactionDTO[]>([]);
   public transactions$ = this.transactionsSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Obtiene todas las transacciones del usuario autenticado
@@ -65,7 +65,7 @@ export class TransactionService {
    * 
    * @param id - UUID de la transacción
    */
-  getTransactionById(id: string): Observable<TransactionDTO> {
+  getTransactionById(id: number): Observable<TransactionDTO> {
     return this.http.get<TransactionDTO>(`${this.API_URL}/${id}`);
   }
 
@@ -98,7 +98,7 @@ export class TransactionService {
    * 
    * Actualiza el estado local reemplazando la transacción modificada
    */
-  updateTransaction(id: string, transaction: CreateTransactionDTO): Observable<TransactionDTO> {
+  updateTransaction(id: number, transaction: CreateTransactionDTO): Observable<TransactionDTO> {
     return this.http.put<TransactionDTO>(`${this.API_URL}/${id}`, transaction)
       .pipe(
         tap(updatedTransaction => {
@@ -120,7 +120,7 @@ export class TransactionService {
    * 
    * Actualiza el estado local removiendo la transacción eliminada
    */
-  deleteTransaction(id: string): Observable<void> {
+  deleteTransaction(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`)
       .pipe(
         tap(() => {
@@ -199,11 +199,11 @@ export class TransactionService {
    * @returns Array de resúmenes por categoría con totales y porcentajes
    */
   getCategorySummary(
-    transactions: TransactionDTO[], 
+    transactions: TransactionDTO[],
     type?: TransactionType
   ): CategorySummary[] {
     // Filtrar por tipo si se especifica
-    const filtered = type 
+    const filtered = type
       ? transactions.filter(t => t.type === type)
       : transactions;
 

@@ -1,12 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
-import { 
-  LoginDTO, 
-  CreateUserDTO, 
-  JwtResponseDTO, 
-  AuthUser 
+import {
+  LoginDTO,
+  CreateUserDTO,
+  JwtResponseDTO,
+  AuthUser
 } from '../models';
 
 /**
@@ -22,6 +23,8 @@ import {
  * Backend endpoints:
  * - POST /api/auth/login - Iniciar sesión
  * - POST /api/auth/register - Registrar nuevo usuario
+ * 
+ * NOTA: Compatible con SSR (Server-Side Rendering)
  */
 @Injectable({
   providedIn: 'root'
@@ -29,11 +32,14 @@ import {
 export class AuthService {
   // URL base del backend (ajustar según configuración)
   private readonly API_URL = 'http://localhost:8080/api/auth';
-  
+
   // Claves para localStorage
   private readonly TOKEN_KEY = 'auth_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly USER_KEY = 'auth_user';
+
+  // Flag para saber si estamos en el navegador
+  private isBrowser: boolean;
 
   /**
    * BehaviorSubject que mantiene el estado del usuario autenticado
@@ -51,12 +57,17 @@ export class AuthService {
    */
   public isAuthenticated$: Observable<boolean>;
 
-  constructor(private http: HttpClient) {
-    // Inicializar BehaviorSubject con usuario almacenado (si existe)
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+
+    // Inicializar BehaviorSubject con usuario almacenado (si existe y estamos en browser)
     const storedUser = this.getUserFromStorage();
     this.currentUserSubject = new BehaviorSubject<AuthUser | null>(storedUser);
     this.currentUser$ = this.currentUserSubject.asObservable();
-    
+
     // Crear observable derivado para verificación de autenticación
     this.isAuthenticated$ = new Observable(observer => {
       this.currentUser$.subscribe(user => observer.next(!!user));
@@ -76,6 +87,7 @@ export class AuthService {
    * @returns Token JWT o null si no existe
    */
   public getToken(): string | null {
+    if (!this.isBrowser) return null;
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
@@ -84,6 +96,7 @@ export class AuthService {
    * @returns Refresh token o null si no existe
    */
   public getRefreshToken(): string | null {
+    if (!this.isBrowser) return null;
     return localStorage.getItem(this.REFRESH_TOKEN_KEY);
   }
 
@@ -120,26 +133,30 @@ export class AuthService {
     return this.http.post<JwtResponseDTO>(`${this.API_URL}/login`, credentials)
       .pipe(
         tap(response => {
-          // Almacenar tokens en localStorage
-          localStorage.setItem(this.TOKEN_KEY, response.token);
-          localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
+          if (this.isBrowser) {
+            // Almacenar tokens en localStorage
+            localStorage.setItem(this.TOKEN_KEY, response.token);
+            localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
 
-          // Decodificar token para extraer información del usuario
-          const decodedToken: any = jwtDecode(response.token);
-          
-          // Crear objeto AuthUser con la información del token
-          const user: AuthUser = {
-            id: decodedToken.sub || decodedToken.userId, // 'sub' es el estándar JWT
-            email: response.email,
-            fullName: decodedToken.fullName || response.email,
-            roles: response.roles,
-            token: response.token,
-            refreshToken: response.refreshToken
-          };
+            // Decodificar token para extraer información del usuario
+            const decodedToken: any = jwtDecode(response.token);
 
-          // Almacenar usuario en localStorage y actualizar BehaviorSubject
-          localStorage.setItem(this.USER_KEY, JSON.stringify(user));
-          this.currentUserSubject.next(user);
+            // Crear objeto AuthUser con la información del token
+            const user: AuthUser = {
+              id: decodedToken.sub || decodedToken.userId, // 'sub' es el estándar JWT
+              email: response.email,
+              fullName: decodedToken.fullName || response.email,
+              roles: response.roles,
+              token: response.token,
+              refreshToken: response.refreshToken
+            };
+
+            // Almacenar usuario en localStorage
+            localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+
+            // Actualizar BehaviorSubject
+            this.currentUserSubject.next(user);
+          }
         })
       );
   }
@@ -157,23 +174,25 @@ export class AuthService {
     return this.http.post<JwtResponseDTO>(`${this.API_URL}/register`, userData)
       .pipe(
         tap(response => {
-          // Mismo proceso que login: almacenar tokens y actualizar estado
-          localStorage.setItem(this.TOKEN_KEY, response.token);
-          localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
+          if (this.isBrowser) {
+            // Mismo proceso que login: almacenar tokens y actualizar estado
+            localStorage.setItem(this.TOKEN_KEY, response.token);
+            localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
 
-          const decodedToken: any = jwtDecode(response.token);
-          
-          const user: AuthUser = {
-            id: decodedToken.sub || decodedToken.userId,
-            email: response.email,
-            fullName: userData.fullName,
-            roles: response.roles,
-            token: response.token,
-            refreshToken: response.refreshToken
-          };
+            const decodedToken: any = jwtDecode(response.token);
 
-          localStorage.setItem(this.USER_KEY, JSON.stringify(user));
-          this.currentUserSubject.next(user);
+            const user: AuthUser = {
+              id: decodedToken.sub || decodedToken.userId,
+              email: response.email,
+              fullName: userData.fullName,
+              roles: response.roles,
+              token: response.token,
+              refreshToken: response.refreshToken
+            };
+
+            localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+            this.currentUserSubject.next(user);
+          }
         })
       );
   }
@@ -186,10 +205,12 @@ export class AuthService {
    * - Opcionalmente podría llamar a un endpoint /logout en el backend
    */
   logout(): void {
-    // Limpiar localStorage
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
+    if (this.isBrowser) {
+      // Limpiar localStorage
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(this.USER_KEY);
+    }
 
     // Actualizar estado a usuario no autenticado
     this.currentUserSubject.next(null);
@@ -201,12 +222,14 @@ export class AuthService {
    * @returns Usuario autenticado o null si no existe o el token expiró
    */
   private getUserFromStorage(): AuthUser | null {
+    if (!this.isBrowser) return null;
+
     const userJson = localStorage.getItem(this.USER_KEY);
     if (!userJson) return null;
 
     try {
       const user: AuthUser = JSON.parse(userJson);
-      
+
       // Verificar que el token siga siendo válido
       if (!this.isTokenValid(user.token)) {
         this.clearStorage();
@@ -240,8 +263,10 @@ export class AuthService {
    * Limpia todos los datos de autenticación del localStorage
    */
   private clearStorage(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
+    if (this.isBrowser) {
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(this.USER_KEY);
+    }
   }
 }

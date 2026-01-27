@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { 
-  HttpRequest, 
-  HttpHandler, 
-  HttpEvent, 
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
   HttpInterceptor,
-  HttpErrorResponse 
+  HttpErrorResponse
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -28,7 +28,7 @@ import { Router } from '@angular/router';
  */
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  
+
   /**
    * URLs públicas que NO requieren token JWT
    * Ajustar según los endpoints del backend
@@ -41,7 +41,7 @@ export class JwtInterceptor implements HttpInterceptor {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   /**
    * Intercepta todas las peticiones HTTP
@@ -51,15 +51,18 @@ export class JwtInterceptor implements HttpInterceptor {
    * @returns Observable con la respuesta HTTP
    */
   intercept(
-    request: HttpRequest<unknown>, 
+    request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    
+
     // Verificar si la URL es pública (no requiere token)
     const isPublicUrl = this.isPublicUrl(request.url);
-    
+
     // Obtener token actual
     const token = this.authService.getToken();
+
+    console.log(`JwtInterceptor: Intercepting ${request.url}. Public: ${isPublicUrl}. Token found: ${!!token}`);
+
 
     // Si la URL NO es pública y existe un token, adjuntarlo
     if (!isPublicUrl && token) {
@@ -74,7 +77,7 @@ export class JwtInterceptor implements HttpInterceptor {
     // Continuar con la petición y manejar errores
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        
+
         // Si el error es 401 Unauthorized, cerrar sesión
         if (error.status === 401) {
           console.warn('Token inválido o expirado. Cerrando sesión...');

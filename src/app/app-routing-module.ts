@@ -59,14 +59,13 @@ const routes: Routes = [
   },
 
   // Transacciones (ruta protegida, lazy loaded)
-  // Nota: Implementar estos componentes según necesidad
-  // {
-  //   path: 'transactions',
-  //   loadChildren: () => import('./features/transactions/transactions.module')
-  //     .then(m => m.TransactionsModule),
-  //   canActivate: [AuthGuard],
-  //   title: 'Transacciones'
-  // },
+  {
+    path: 'transactions',
+    loadChildren: () => import('./features/transactions/transactions-routing.module')
+      .then(m => m.TransactionsRoutingModule),
+    canActivate: [AuthGuard],
+    title: 'Transacciones'
+  },
 
   // Suscripciones (ruta protegida, lazy loaded)
   // {
@@ -88,10 +87,10 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes, {
     // Habilitar estrategia de precarga de módulos lazy-loaded
     // preloadingStrategy: PreloadAllModules,
-    
+
     // Scroll al inicio al cambiar de ruta
     scrollPositionRestoration: 'top',
-    
+
     // Habilitar hash location strategy si es necesario
     // useHash: true
   })],

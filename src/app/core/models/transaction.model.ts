@@ -33,7 +33,7 @@ export interface CreateTransactionDTO {
  * Se recibe del endpoint GET /api/transactions
  */
 export interface TransactionDTO {
-  id: string;                  // UUID de la transacción
+  id: number;                  // ID de la transacción (Long en backend)
   userId: string;              // UUID del usuario propietario
   amount: number;              // Cantidad de la transacción
   currency: string;            // Moneda

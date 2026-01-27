@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, signal, computed, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Subject, takeUntil, combineLatest } from 'rxjs';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
@@ -12,12 +12,12 @@ import { MatIconModule } from '@angular/material/icon';
 // Servicios y modelos
 import { TransactionService } from '../../core/services/transaction.service';
 import { SubscriptionService } from '../../core/services/subscription.service';
-import { 
-  TransactionDTO, 
+import {
+  TransactionDTO,
   TransactionType,
   FinancialSummary,
   CategorySummary,
-  SubscriptionSummary 
+  SubscriptionSummary
 } from '../../core/models';
 
 /**
@@ -36,6 +36,8 @@ import {
  * - Uso de signals para estado reactivo y computed para valores derivados
  * - Integración con ng2-charts para gráfico de pastel
  */
+import { Navbar } from '../../shared/components/navbar/navbar';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -44,7 +46,8 @@ import {
     BaseChartDirective,
     MatCardModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
+    Navbar
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -60,13 +63,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * Señales (signals) para gestión de estado reactivo
    * Las señales se actualizan automáticamente cuando cambian los datos
    */
-  
+
   // Lista de transacciones cargadas
   transactions = signal<TransactionDTO[]>([]);
-  
+
   // Estado de carga
   isLoading = signal<boolean>(true);
-  
+
   // Mensaje de error si falla la carga
   errorMessage = signal<string | null>(null);
 
@@ -74,7 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * Valores computados (computed signals)
    * Se recalculan automáticamente cuando cambian las señales de las que dependen
    */
-  
+
   // Resumen financiero (ingresos, gastos, balance)
   financialSummary = computed<FinancialSummary>(() => {
     return this.transactionService.calculateFinancialSummary(this.transactions());
@@ -83,7 +86,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Resumen de gastos por categoría (para el gráfico de pastel)
   expenseSummary = computed<CategorySummary[]>(() => {
     return this.transactionService.getCategorySummary(
-      this.transactions(), 
+      this.transactions(),
       TransactionType.EXPENSE
     );
   });
@@ -100,7 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * Configuración del gráfico de pastel
    * Muestra la distribución de gastos por categoría
    */
-  
+
   // Datos del gráfico (se actualizan cuando cambia expenseSummary)
   pieChartData = computed<ChartData<'pie'>>(() => {
     const summary = this.expenseSummary();
@@ -161,17 +164,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   };
 
+  private isBrowser: boolean;
+
   constructor(
     private transactionService: TransactionService,
-    private subscriptionService: SubscriptionService
-  ) {}
+    private subscriptionService: SubscriptionService,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   /**
    * Inicialización del componente
    * Carga datos de transacciones y suscripciones del backend
    */
   ngOnInit(): void {
-    this.loadDashboardData();
+    if (this.isBrowser) {
+      this.loadDashboardData();
+    }
   }
 
   /**
@@ -196,24 +206,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
       transactions: this.transactionService.getAllTransactions(),
       subscriptions: this.subscriptionService.getAllSubscriptions()
     })
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: ({ transactions, subscriptions }) => {
-        // Actualizar señales con los datos obtenidos
-        this.transactions.set(transactions);
-        
-        // Calcular resumen de suscripciones
-        const subSummary = this.subscriptionService.calculateSubscriptionSummary(subscriptions);
-        this.subscriptionSummary.set(subSummary);
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: ({ transactions, subscriptions }) => {
+          // Actualizar señales con los datos obtenidos
+          this.transactions.set(transactions);
 
-        this.isLoading.set(false);
-      },
-      error: (error) => {
-        console.error('Error cargando datos del dashboard:', error);
-        this.errorMessage.set('Error al cargar los datos. Por favor, intenta nuevamente.');
-        this.isLoading.set(false);
-      }
-    });
+          // Calcular resumen de suscripciones
+          const subSummary = this.subscriptionService.calculateSubscriptionSummary(subscriptions);
+          this.subscriptionSummary.set(subSummary);
+
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          console.error('Error cargando datos del dashboard:', error);
+          this.errorMessage.set('Error al cargar los datos. Por favor, intenta nuevamente.');
+          this.isLoading.set(false);
+        }
+      });
   }
 
   /**
@@ -236,6 +246,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * Se puede llamar desde un botón de refresh en el template
    */
   refresh(): void {
-    this.loadDashboardData();
+    if (this.isBrowser) {
+      this.loadDashboardData();
+    }
   }
 }

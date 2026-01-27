@@ -1,18 +1,16 @@
-/**
- * Template del componente Dashboard
- * Muestra el resumen financiero con cards y gráfico de pastel
- */
+<!-- Template del componente Dashboard -->
+<!-- Muestra el resumen financiero con cards y gráfico de pastel -->
+<app-navbar></app-navbar>
 
 <!-- Contenedor principal del dashboard -->
 <div class="dashboard-container p-6 bg-gray-50 min-h-screen">
-  
+
   <!-- Encabezado del dashboard -->
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-800">Dashboard Financiero</h1>
-    
+
     <!-- Botón para refrescar datos -->
-    <button 
-      (click)="refresh()" 
+    <button (click)="refresh()"
       class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition"
       [disabled]="isLoading()">
       <mat-icon>refresh</mat-icon>
@@ -32,14 +30,14 @@
 
   <!-- Contenido del dashboard -->
   <div *ngIf="!isLoading() && !errorMessage()">
-    
+
     <!-- Sección: Resumen Financiero con Cards -->
     <section class="mb-8">
       <h2 class="text-xl font-semibold text-gray-700 mb-4">Resumen Financiero</h2>
-      
+
       <!-- Grid de cards responsive -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        
+
         <!-- Card: Total Ingresos -->
         <mat-card class="shadow-lg hover:shadow-xl transition">
           <mat-card-header>
@@ -91,9 +89,8 @@
             </div>
           </mat-card-header>
           <mat-card-content class="pt-4">
-            <p class="text-3xl font-bold" 
-               [class.text-green-600]="financialSummary().balance >= 0"
-               [class.text-red-600]="financialSummary().balance < 0">
+            <p class="text-3xl font-bold" [class.text-green-600]="financialSummary().balance >= 0"
+              [class.text-red-600]="financialSummary().balance < 0">
               {{ formatCurrency(financialSummary().balance, financialSummary().currency) }}
             </p>
           </mat-card-content>
@@ -127,10 +124,10 @@
     <!-- Sección: Gráfico de Gastos por Categoría -->
     <section class="mb-8">
       <h2 class="text-xl font-semibold text-gray-700 mb-4">Gastos por Categoría</h2>
-      
+
       <mat-card class="shadow-lg">
         <mat-card-content>
-          
+
           <!-- Mensaje si no hay gastos -->
           <div *ngIf="expenseSummary().length === 0" class="text-center py-12 text-gray-500">
             <mat-icon class="text-6xl mb-4">pie_chart</mat-icon>
@@ -140,14 +137,10 @@
 
           <!-- Gráfico de pastel -->
           <div *ngIf="expenseSummary().length > 0" class="flex flex-col lg:flex-row gap-8">
-            
+
             <!-- Contenedor del gráfico -->
             <div class="flex-1" style="height: 400px;">
-              <canvas 
-                baseChart
-                [data]="pieChartData()"
-                [options]="pieChartOptions"
-                type="pie">
+              <canvas baseChart [data]="pieChartData()" [options]="pieChartOptions" type="pie">
               </canvas>
             </div>
 
@@ -186,9 +179,9 @@
     <!-- Sección: Estadísticas Adicionales -->
     <section>
       <h2 class="text-xl font-semibold text-gray-700 mb-4">Estadísticas</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
+
         <!-- Total de transacciones -->
         <mat-card class="shadow-lg">
           <mat-card-content class="text-center py-6">
@@ -204,9 +197,9 @@
             <mat-icon class="text-5xl text-orange-600 mb-2">calculate</mat-icon>
             <p class="text-3xl font-bold text-gray-800">
               {{ formatCurrency(
-                  financialSummary().totalExpenses / (financialSummary().transactionCount || 1), 
-                  financialSummary().currency
-                ) 
+              financialSummary().totalExpenses / (financialSummary().transactionCount || 1),
+              financialSummary().currency
+              )
               }}
             </p>
             <p class="text-sm text-gray-600 mt-2">Promedio por Transacción</p>
