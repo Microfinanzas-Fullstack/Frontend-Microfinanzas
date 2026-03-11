@@ -1,0 +1,44 @@
+<mat-toolbar color="primary" class="navbar-toolbar">
+
+  <!-- Brand -->
+  <a routerLink="/dashboard" class="brand-link flex items-center gap-2 no-underline text-white mr-6">
+    <mat-icon>account_balance</mat-icon>
+    <span class="font-bold text-lg">MicroFinanzas</span>
+  </a>
+
+  <!-- Navigation links (desktop) -->
+  <nav class="flex items-center gap-1 flex-1">
+    @for (link of navLinks; track link.path) {
+      <a mat-button
+         [routerLink]="link.path"
+         routerLinkActive="nav-active"
+         class="nav-link text-white/90 hover:text-white">
+        <mat-icon class="mr-1">{{ link.icon }}</mat-icon>
+        <span class="hidden sm:inline">{{ link.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <!-- User area -->
+  @if (currentUser) {
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn flex items-center gap-1">
+      <mat-icon class="text-white/90">account_circle</mat-icon>
+      <span class="hidden md:inline text-sm text-white/90 max-w-32 truncate">
+        {{ currentUser.fullName || currentUser.email }}
+      </span>
+      <mat-icon class="text-white/70 !text-base">arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <div class="px-4 py-3 border-b border-gray-100">
+        <p class="font-semibold text-gray-800 text-sm m-0">{{ currentUser.fullName }}</p>
+        <p class="text-xs text-gray-400 m-0 mt-0.5">{{ currentUser.email }}</p>
+      </div>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon class="text-red-500">logout</mat-icon>
+        <span>Cerrar sesión</span>
+      </button>
+    </mat-menu>
+  }
+
+</mat-toolbar>

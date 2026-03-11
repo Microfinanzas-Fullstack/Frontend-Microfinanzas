@@ -15,7 +15,6 @@ import { Observable, startWith, map } from 'rxjs';
 
 import { TransactionService } from '../../../../core/services/transaction.service';
 import { CreateTransactionDTO, TransactionDTO } from '../../../../core/models';
-
 @Component({
     selector: 'app-transaction-form',
     standalone: true,
@@ -31,7 +30,7 @@ import { CreateTransactionDTO, TransactionDTO } from '../../../../core/models';
         MatIconModule,
         MatAutocompleteModule,
         MatProgressSpinnerModule,
-        MatCardModule
+        MatCardModule,
     ],
     templateUrl: './transaction-form.component.html',
     styleUrls: ['./transaction-form.component.css']

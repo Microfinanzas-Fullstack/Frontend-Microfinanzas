@@ -61,20 +61,20 @@ const routes: Routes = [
   // Transacciones (ruta protegida, lazy loaded)
   {
     path: 'transactions',
-    loadChildren: () => import('./features/transactions/transactions-routing.module')
-      .then(m => m.TransactionsRoutingModule),
+    loadComponent: () => import('./features/transactions/transactions.component')
+      .then(m => m.TransactionsComponent),
     canActivate: [AuthGuard],
     title: 'Transacciones'
   },
 
   // Suscripciones (ruta protegida, lazy loaded)
-  // {
-  //   path: 'subscriptions',
-  //   loadChildren: () => import('./features/subscriptions/subscriptions.module')
-  //     .then(m => m.SubscriptionsModule),
-  //   canActivate: [AuthGuard],
-  //   title: 'Suscripciones'
-  // },
+  {
+    path: 'subscriptions',
+    loadComponent: () => import('./features/subscriptions/subscriptions.component')
+      .then(m => m.SubscriptionsComponent),
+    canActivate: [AuthGuard],
+    title: 'Suscripciones'
+  },
 
   // Ruta wildcard para 404 (siempre debe ser la última)
   {

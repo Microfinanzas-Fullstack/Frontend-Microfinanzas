@@ -1,113 +1,112 @@
-<!-- Contenedor principal del login -->
-<div class="login-container min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-  
-  <!-- Card centrada con el formulario -->
-  <mat-card class="login-card w-full max-w-md shadow-2xl">
-    
-    <!-- Encabezado de la card -->
-    <mat-card-header class="text-center mb-6">
-      <div class="w-full">
-        <div class="flex justify-center mb-4">
-          <div class="bg-primary p-4 rounded-full">
-            <mat-icon class="text-white text-5xl">account_balance_wallet</mat-icon>
+<div class="auth-root min-h-screen flex">
+
+  <!-- ===== Panel izquierdo: Branding (solo desktop) ===== -->
+  <aside class="brand-panel hidden lg:flex lg:w-5/12 xl:w-1/2 flex-col justify-center items-center relative overflow-hidden">
+    <div class="brand-bg absolute inset-0"></div>
+    <!-- Círculos decorativos -->
+    <div class="deco-circle top-0 right-0 translate-x-1/2 -translate-y-1/2"></div>
+    <div class="deco-circle bottom-0 left-0 -translate-x-1/3 translate-y-1/3 w-80 h-80"></div>
+
+    <div class="relative z-10 text-center px-10 max-w-sm">
+      <!-- Logo -->
+      <div class="flex justify-center mb-8">
+        <div class="brand-icon-box">
+          <mat-icon class="brand-icon">account_balance_wallet</mat-icon>
+        </div>
+      </div>
+      <h1 class="text-4xl font-bold text-white mb-2">Mi Finanza</h1>
+      <p class="text-blue-200 text-base mb-10">Tu gestor de finanzas personales</p>
+
+      <!-- Feature list -->
+      <div class="space-y-3 text-left">
+        <div class="feature-item">
+          <mat-icon class="text-blue-300 text-lg">trending_up</mat-icon>
+          <div>
+            <p class="text-white font-medium text-sm">Control de ingresos y gastos</p>
+            <p class="text-blue-300 text-xs">Registra cada movimiento</p>
           </div>
         </div>
-        <mat-card-title class="text-2xl font-bold text-gray-800">
-          Finanzas Personales
-        </mat-card-title>
-        <mat-card-subtitle class="text-gray-600 mt-2">
-          Inicia sesión para continuar
-        </mat-card-subtitle>
+        <div class="feature-item">
+          <mat-icon class="text-blue-300 text-lg">pie_chart</mat-icon>
+          <div>
+            <p class="text-white font-medium text-sm">Análisis visual</p>
+            <p class="text-blue-300 text-xs">Gráficos y estadísticas claras</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <mat-icon class="text-blue-300 text-lg">subscriptions</mat-icon>
+          <div>
+            <p class="text-white font-medium text-sm">Gestión de suscripciones</p>
+            <p class="text-blue-300 text-xs">Controla tus pagos recurrentes</p>
+          </div>
+        </div>
       </div>
-    </mat-card-header>
+    </div>
+  </aside>
 
-    <!-- Contenido: Formulario de login -->
-    <mat-card-content>
-      
-      <!-- Mensaje de error -->
-      <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-start gap-2">
-        <mat-icon class="text-red-600">error</mat-icon>
-        <p class="text-sm">{{ errorMessage }}</p>
+  <!-- ===== Panel derecho: Formulario ===== -->
+  <main class="form-panel flex flex-col justify-center items-center w-full lg:w-7/12 xl:w-1/2 min-h-screen bg-white p-6 sm:p-12">
+
+    <!-- Logo mobile -->
+    <div class="lg:hidden mb-10">
+      <div class="inline-flex items-center gap-2 bg-blue-800 text-white px-5 py-3 rounded-2xl">
+        <mat-icon>account_balance_wallet</mat-icon>
+        <span class="text-lg font-bold">Mi Finanza</span>
+      </div>
+    </div>
+
+    <div class="form-content w-full max-w-sm">
+      <!-- Heading -->
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Bienvenido</h2>
+        <p class="text-gray-500 mt-1">Inicia sesión en tu cuenta</p>
       </div>
 
-      <!-- Formulario reactivo -->
+      <!-- Error alert -->
+      <div *ngIf="errorMessage" class="mb-5 flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+        <mat-icon class="text-red-500 flex-shrink-0" style="margin-top:2px;font-size:18px">error_outline</mat-icon>
+        <p class="text-sm text-red-700">{{ errorMessage }}</p>
+      </div>
+
+      <!-- Formulario -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
-        
-        <!-- Campo: Email -->
+
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Email</mat-label>
-          <input 
-            matInput 
-            type="email" 
-            formControlName="email"
-            placeholder="tu@email.com"
-            autocomplete="email">
-          <mat-icon matPrefix class="text-gray-400">email</mat-icon>
-          <mat-error *ngIf="loginForm.get('email')?.invalid">
-            {{ getEmailErrorMessage() }}
-          </mat-error>
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="tu@email.com" autocomplete="email">
+          <mat-icon matPrefix class="field-icon">alternate_email</mat-icon>
+          <mat-error *ngIf="loginForm.get('email')?.invalid">{{ getEmailErrorMessage() }}</mat-error>
         </mat-form-field>
 
-        <!-- Campo: Password -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Contraseña</mat-label>
-          <input 
-            matInput 
-            [type]="hidePassword ? 'password' : 'text'" 
-            formControlName="password"
-            placeholder="••••••••"
-            autocomplete="current-password">
-          <mat-icon matPrefix class="text-gray-400">lock</mat-icon>
-          <button 
-            mat-icon-button 
-            matSuffix 
-            type="button"
-            (click)="togglePasswordVisibility()"
-            [attr.aria-label]="'Mostrar contraseña'"
-            [attr.aria-pressed]="!hidePassword">
-            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="••••••••" autocomplete="current-password">
+          <mat-icon matPrefix class="field-icon">lock_outline</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" [attr.aria-label]="'Mostrar contraseña'">
+            <mat-icon class="field-icon">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
-          <mat-error *ngIf="loginForm.get('password')?.invalid">
-            {{ getPasswordErrorMessage() }}
-          </mat-error>
+          <mat-error *ngIf="loginForm.get('password')?.invalid">{{ getPasswordErrorMessage() }}</mat-error>
         </mat-form-field>
 
-        <!-- Botón de submit -->
-        <button 
-          mat-raised-button 
-          color="primary" 
-          type="submit"
-          class="w-full h-12 text-lg"
-          [disabled]="isLoading || loginForm.invalid">
-          
-          <!-- Spinner cuando está cargando -->
-          <mat-spinner 
-            *ngIf="isLoading" 
-            diameter="20" 
-            class="inline-block mr-2">
-          </mat-spinner>
-          
-          <!-- Texto del botón -->
-          <span *ngIf="!isLoading">Iniciar Sesión</span>
-          <span *ngIf="isLoading">Iniciando sesión...</span>
+        <button mat-raised-button color="primary" type="submit" class="submit-btn w-full" [disabled]="isLoading || loginForm.invalid">
+          <mat-spinner *ngIf="isLoading" diameter="20" class="btn-spinner"></mat-spinner>
+          <span *ngIf="!isLoading">Iniciar sesión</span>
+          <span *ngIf="isLoading">Iniciando...</span>
         </button>
 
       </form>
 
-    </mat-card-content>
+      <!-- Divider -->
+      <div class="my-7 flex items-center gap-4">
+        <div class="flex-1 h-px bg-gray-200"></div>
+        <span class="text-xs text-gray-400 uppercase tracking-wide">¿Nuevo aquí?</span>
+        <div class="flex-1 h-px bg-gray-200"></div>
+      </div>
 
-    <!-- Footer: Link a registro -->
-    <mat-card-footer class="text-center p-4 border-t mt-6">
-      <p class="text-sm text-gray-600">
-        ¿No tienes cuenta? 
-        <a 
-          routerLink="/auth/register" 
-          class="text-primary hover:underline font-semibold">
-          Regístrate aquí
-        </a>
-      </p>
-    </mat-card-footer>
-
-  </mat-card>
+      <a routerLink="/auth/register" class="register-link block w-full text-center px-4 py-3">
+        Crear cuenta
+      </a>
+    </div>
+  </main>
 
 </div>

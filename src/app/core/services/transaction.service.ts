@@ -159,8 +159,8 @@ export class TransactionService {
    */
   getTransactionsByDateRange(startDate: string, endDate: string): Observable<TransactionDTO[]> {
     const params = new HttpParams()
-      .set('start', startDate)
-      .set('end', endDate);
+      .set('startDate', startDate)
+      .set('endDate', endDate);
 
     return this.http.get<TransactionDTO[]>(`${this.API_URL}/date-range`, { params });
   }

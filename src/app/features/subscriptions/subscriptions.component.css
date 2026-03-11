@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.subscription-card {
+  transition: box-shadow 0.2s ease;
+}

@@ -36,8 +36,6 @@ import {
  * - Uso de signals para estado reactivo y computed para valores derivados
  * - Integración con ng2-charts para gráfico de pastel
  */
-import { Navbar } from '../../shared/components/navbar/navbar';
-
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -47,7 +45,6 @@ import { Navbar } from '../../shared/components/navbar/navbar';
     MatCardModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    Navbar
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']

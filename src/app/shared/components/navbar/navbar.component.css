@@ -1,0 +1,25 @@
+.navbar-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.brand-link {
+  text-decoration: none;
+}
+
+.nav-link {
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.nav-active {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.user-btn {
+  border-radius: 6px;
+}

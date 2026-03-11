@@ -15,6 +15,9 @@ import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
 // Guards
 import { AuthGuard } from './core/guards/auth.guard';
 
+// Shared components
+import { Navbar } from './shared/components/navbar/navbar';
+
 // Servicios (providedIn: 'root' - no necesitan declaración aquí)
 // - AuthService
 // - TransactionService
@@ -46,7 +49,8 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
   imports: [
     BrowserModule,              // Funcionalidad básica del navegador
     BrowserAnimationsModule,    // Requerido para Angular Material
-    AppRoutingModule            // Configuración de rutas
+    AppRoutingModule,           // Configuración de rutas
+    Navbar                      // Barra de navegación compartida
   ],
   providers: [
     // Manejo global de errores

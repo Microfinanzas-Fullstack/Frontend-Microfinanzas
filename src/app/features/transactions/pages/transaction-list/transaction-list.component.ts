@@ -12,7 +12,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { TransactionService } from '../../../../core/services/transaction.service';
 import { TransactionDTO, TransactionType } from '../../../../core/models';
-
 @Component({
     selector: 'app-transaction-list',
     standalone: true,
@@ -26,7 +25,7 @@ import { TransactionDTO, TransactionType } from '../../../../core/models';
         MatCardModule,
         MatSelectModule,
         MatProgressSpinnerModule,
-        MatFormFieldModule
+        MatFormFieldModule,
     ],
     templateUrl: './transaction-list.component.html',
     styleUrls: ['./transaction-list.component.css']

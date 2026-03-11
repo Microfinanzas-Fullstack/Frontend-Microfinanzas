@@ -1,74 +1,165 @@
-/**
- * Estilos específicos del componente Dashboard
- * Complementa las clases de Tailwind CSS con estilos personalizados
- */
+/* ===== Page layout ===== */
+.dash-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+}
+@media (min-width: 640px) { .dash-page { padding: 32px 32px 64px; } }
 
-/* Contenedor principal del dashboard */
-.dashboard-container {
-  animation: fadeIn 0.3s ease-in;
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.dash-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+.dash-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 2px;
+}
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #1565c0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.refresh-btn:hover { background: #0d47a1; }
+.refresh-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ===== Section title ===== */
+.section-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 14px;
 }
 
-/* Animación de fade in al cargar el componente */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ===== KPI Cards ===== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
+@media (min-width: 540px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
 
-/* Estilo para las tarjetas de Material */
-mat-card {
+.kpi-card {
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.10); }
+
+.kpi-card--income     { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+.kpi-card--expense    { background: linear-gradient(135deg, #fff1f2, #ffe4e6); }
+.kpi-card--balance-pos { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+.kpi-card--balance-neg { background: linear-gradient(135deg, #fff1f2, #ffe4e6); }
+.kpi-card--sub        { background: linear-gradient(135deg, #faf5ff, #ede9fe); }
+
+.kpi-icon-box {
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.kpi-card--income     .kpi-icon-box mat-icon { color: #16a34a; }
+.kpi-card--expense    .kpi-icon-box mat-icon { color: #dc2626; }
+.kpi-card--balance-pos .kpi-icon-box mat-icon { color: #1565c0; }
+.kpi-card--balance-neg .kpi-icon-box mat-icon { color: #dc2626; }
+.kpi-card--sub        .kpi-icon-box mat-icon { color: #7c3aed; }
+
+.kpi-body { min-width: 0; }
+.kpi-label { font-size: 12px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #0f172a; }
+.kpi-sub   { font-size: 12px; color: #7c3aed; margin-top: 2px; }
+
+/* ===== Content card ===== */
+.content-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
 }
 
-mat-card-header {
-  padding: 16px;
-  background-color: transparent;
-}
+/* ===== Empty state ===== */
+.empty-state { text-align: center; padding: 56px 0; }
+.empty-icon { font-size: 56px !important; width: 56px !important; height: 56px !important; color: #cbd5e1; margin-bottom: 12px; }
+.empty-title { font-size: 16px; font-weight: 600; color: #475569; }
+.empty-desc  { font-size: 13px; color: #94a3b8; margin-top: 4px; }
 
-mat-card-content {
-  padding: 0 16px 16px;
+/* ===== Chart layout ===== */
+.chart-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
+@media (min-width: 768px) { .chart-layout { flex-direction: row; align-items: flex-start; } }
 
-/* Asegurar que los iconos de Material tengan el tamaño correcto */
-mat-icon {
-  width: 24px;
-  height: 24px;
-  font-size: 24px;
-}
+.chart-wrapper { flex: 1; height: 320px; min-height: 260px; }
+.chart-table-wrapper { flex: 1; }
+.chart-table-title { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 10px; }
+.chart-table-scroll { overflow-y: auto; max-height: 320px; }
 
-/* Hover effect para las cards */
-mat-card:hover {
-  transform: translateY(-2px);
-  transition: all 0.3s ease;
-}
-
-/* Estilo para la tabla de categorías */
-table {
-  font-family: 'Roboto', sans-serif;
-}
-
-table thead {
+.chart-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.chart-table thead th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  background: #f8fafc;
   position: sticky;
   top: 0;
 }
+.chart-table tbody tr { border-bottom: 1px solid #f1f5f9; }
+.chart-table tbody tr:hover { background: #f8fafc; }
+.chart-table td { padding: 9px 10px; color: #334155; }
+.cat-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #1565c0; margin-right: 6px; vertical-align: middle; }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .dashboard-container {
-    padding: 1rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  h2 {
-    font-size: 1.25rem;
-  }
+/* ===== Stats grid ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
+@media (min-width: 540px)  { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.10); }
+.stat-icon { font-size: 40px !important; width: 40px !important; height: 40px !important; margin-bottom: 10px; }
+.stat-value { font-size: 24px; font-weight: 700; color: #0f172a; }
+.stat-label { font-size: 13px; color: #64748b; margin-top: 4px; }

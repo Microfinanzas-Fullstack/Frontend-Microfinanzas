@@ -1,50 +1,71 @@
-<nav class="bg-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center">
-                    <mat-icon class="text-primary mr-2">account_balance_wallet</mat-icon>
-                    <span class="font-bold text-xl text-gray-800">Mi Finanza</span>
-                </div>
+<nav class="navbar">
+  <div class="navbar-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <!-- Desktop Menu -->
-                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                    <a routerLink="/dashboard" routerLinkActive="border-primary text-gray-900"
-                        class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out">
-                        Dashboard
-                    </a>
-                    <a routerLink="/transactions" routerLinkActive="border-primary text-gray-900"
-                        class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out">
-                        Transacciones
-                    </a>
-                </div>
-            </div>
+    <!-- ===== Logo ===== -->
+    <a routerLink="/dashboard" class="navbar-logo">
+      <div class="logo-icon-box">
+        <mat-icon class="logo-icon">account_balance_wallet</mat-icon>
+      </div>
+      <span class="logo-text">Mi Finanza</span>
+    </a>
 
-            <!-- User Menu -->
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <button (click)="logout()"
-                        class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        <mat-icon class="mr-2 -ml-1 text-lg">logout</mat-icon>
-                        <span>Cerrar Sesión</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+    <!-- ===== Desktop Navigation ===== -->
+    <div class="desktop-nav">
+      <a routerLink="/dashboard" routerLinkActive="nav-link--active" class="nav-link">
+        <mat-icon class="nav-link-icon">dashboard</mat-icon>
+        Dashboard
+      </a>
+      <a routerLink="/transactions" routerLinkActive="nav-link--active" class="nav-link">
+        <mat-icon class="nav-link-icon">receipt_long</mat-icon>
+        Transacciones
+      </a>
+      <a routerLink="/subscriptions" routerLinkActive="nav-link--active" class="nav-link">
+        <mat-icon class="nav-link-icon">subscriptions</mat-icon>
+        Suscripciones
+      </a>
     </div>
 
-    <!-- Mobile Menu (simplified for now) -->
-    <div class="sm:hidden border-t border-gray-200">
-        <div class="pt-2 pb-3 space-y-1">
-            <a routerLink="/dashboard" routerLinkActive="bg-indigo-50 border-primary text-indigo-700"
-                class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-                Dashboard
-            </a>
-            <a routerLink="/transactions" routerLinkActive="bg-indigo-50 border-primary text-indigo-700"
-                class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-                Transacciones
-            </a>
-        </div>
+    <!-- ===== Desktop User Menu ===== -->
+    <div class="desktop-actions">
+      <!-- User chip -->
+      <div class="user-chip" *ngIf="currentUser$ | async as user">
+        <div class="user-avatar">{{ getUserInitial(user.email) }}</div>
+        <span class="user-email">{{ user.email }}</span>
+      </div>
+      <!-- Logout -->
+      <button class="logout-btn" (click)="logout()">
+        <mat-icon style="font-size:18px">logout</mat-icon>
+        <span>Salir</span>
+      </button>
     </div>
+
+    <!-- ===== Hamburger (mobile) ===== -->
+    <button class="hamburger" (click)="toggleMenu()" [class.hamburger--open]="menuOpen" aria-label="Menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+  </div>
+
+  <!-- ===== Mobile Menu ===== -->
+  <div class="mobile-menu" [class.mobile-menu--open]="menuOpen">
+    <a routerLink="/dashboard" routerLinkActive="mobile-link--active" class="mobile-link" (click)="menuOpen = false">
+      <mat-icon>dashboard</mat-icon>
+      Dashboard
+    </a>
+    <a routerLink="/transactions" routerLinkActive="mobile-link--active" class="mobile-link" (click)="menuOpen = false">
+      <mat-icon>receipt_long</mat-icon>
+      Transacciones
+    </a>
+    <a routerLink="/subscriptions" routerLinkActive="mobile-link--active" class="mobile-link" (click)="menuOpen = false">
+      <mat-icon>subscriptions</mat-icon>
+      Suscripciones
+    </a>
+    <div class="mobile-divider"></div>
+    <button class="mobile-logout" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Cerrar sesión
+    </button>
+  </div>
 </nav>

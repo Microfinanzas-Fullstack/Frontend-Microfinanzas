@@ -1,85 +1,101 @@
-<div class="container mx-auto p-6 max-w-2xl">
-    <div class="mb-6">
-        <button mat-button routerLink="/transactions">
-            <mat-icon>arrow_back</mat-icon>
-            Volver
-        </button>
+<div class="form-page page-fade">
+
+  <!-- Breadcrumb -->
+  <div class="form-breadcrumb">
+    <a routerLink="/transactions" class="back-link">
+      <mat-icon style="font-size:18px">arrow_back</mat-icon>
+      Transacciones
+    </a>
+    <mat-icon style="font-size:14px; color:#cbd5e1">chevron_right</mat-icon>
+    <span class="crumb-current">{{ isEditMode ? 'Editar' : 'Nueva' }} transacción</span>
+  </div>
+
+  <!-- Form card -->
+  <div class="form-card">
+
+    <!-- Card header -->
+    <div class="form-card-header">
+      <div class="form-card-icon" [class.icon--income]="transactionForm.get('type')?.value === 'INCOME'" [class.icon--expense]="transactionForm.get('type')?.value === 'EXPENSE'">
+        <mat-icon>{{ transactionForm.get('type')?.value === 'INCOME' ? 'trending_up' : 'trending_down' }}</mat-icon>
+      </div>
+      <div>
+        <h1 class="form-card-title">{{ isEditMode ? 'Editar' : 'Nueva' }} transacción</h1>
+        <p class="form-card-subtitle">Completa los datos del movimiento financiero</p>
+      </div>
     </div>
 
-    <mat-card>
-        <mat-card-header>
-            <mat-card-title>
-                {{ isEditMode ? 'Editar' : 'Nueva' }} Transacción
-            </mat-card-title>
-        </mat-card-header>
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="form-error">
+      <mat-icon style="font-size:18px;flex-shrink:0">error_outline</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
 
-        <mat-card-content class="pt-6">
-            <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+    <!-- Form -->
+    <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="form-body">
 
-                <!-- Tipo de Transacción -->
-                <mat-form-field appearance="outline">
-                    <mat-label>Tipo</mat-label>
-                    <mat-select formControlName="type">
-                        <mat-option value="INCOME">Ingreso</mat-option>
-                        <mat-option value="EXPENSE">Gasto</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="transactionForm.get('type')?.hasError('required')">Requerido</mat-error>
-                </mat-form-field>
+      <!-- Row 1: Tipo + Monto -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Tipo de transacción</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="INCOME">
+              <span class="flex items-center gap-2"><mat-icon style="color:#16a34a;font-size:16px">trending_up</mat-icon> Ingreso</span>
+            </mat-option>
+            <mat-option value="EXPENSE">
+              <span class="flex items-center gap-2"><mat-icon style="color:#dc2626;font-size:16px">trending_down</mat-icon> Gasto</span>
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="transactionForm.get('type')?.hasError('required')">Requerido</mat-error>
+        </mat-form-field>
 
-                <!-- Monto -->
-                <mat-form-field appearance="outline">
-                    <mat-label>Monto</mat-label>
-                    <input matInput type="number" formControlName="amount" min="0">
-                    <span matPrefix>$&nbsp;</span>
-                    <mat-error *ngIf="transactionForm.get('amount')?.hasError('required')">Requerido</mat-error>
-                    <mat-error *ngIf="transactionForm.get('amount')?.hasError('min')">Debe ser mayor a 0</mat-error>
-                </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Monto</mat-label>
+          <input matInput type="number" formControlName="amount" min="0" placeholder="0.00">
+          <span matPrefix class="prefix-currency">$&nbsp;</span>
+          <mat-error *ngIf="transactionForm.get('amount')?.hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="transactionForm.get('amount')?.hasError('min')">Debe ser mayor a 0</mat-error>
+        </mat-form-field>
+      </div>
 
-                <!-- Categoría -->
-                <mat-form-field appearance="outline">
-                    <mat-label>Categoría</mat-label>
-                    <input matInput formControlName="category" [matAutocomplete]="auto">
-                    <mat-autocomplete #auto="matAutocomplete">
-                        <mat-option *ngFor="let cat of filteredCategories | async" [value]="cat">
-                            {{cat}}
-                        </mat-option>
-                    </mat-autocomplete>
-                    <mat-error *ngIf="transactionForm.get('category')?.hasError('required')">Requerido</mat-error>
-                </mat-form-field>
+      <!-- Row 2: Categoría + Fecha -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Categoría</mat-label>
+          <input matInput formControlName="category" [matAutocomplete]="auto" placeholder="Ej: Alimentación">
+          <mat-icon matPrefix style="color:#94a3b8;font-size:20px">label_outline</mat-icon>
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let cat of filteredCategories | async" [value]="cat">{{ cat }}</mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="transactionForm.get('category')?.hasError('required')">Requerido</mat-error>
+        </mat-form-field>
 
-                <!-- Fecha -->
-                <mat-form-field appearance="outline">
-                    <mat-label>Fecha</mat-label>
-                    <input matInput [matDatepicker]="picker" formControlName="transactionDate">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                    <mat-error
-                        *ngIf="transactionForm.get('transactionDate')?.hasError('required')">Requerido</mat-error>
-                </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Fecha</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="transactionDate">
+          <mat-icon matPrefix style="color:#94a3b8;font-size:20px">calendar_today</mat-icon>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="transactionForm.get('transactionDate')?.hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+      </div>
 
-                <!-- Descripción -->
-                <mat-form-field appearance="outline">
-                    <mat-label>Descripción (Opcional)</mat-label>
-                    <textarea matInput formControlName="description" rows="3"></textarea>
-                </mat-form-field>
+      <!-- Descripción -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Descripción (opcional)</mat-label>
+        <textarea matInput formControlName="description" rows="3" placeholder="Agrega un detalle..."></textarea>
+        <mat-icon matPrefix style="color:#94a3b8;font-size:20px">notes</mat-icon>
+      </mat-form-field>
 
-                <!-- Botones -->
-                <div class="flex justify-end gap-2 mt-4">
-                    <button mat-button type="button" routerLink="/transactions" [disabled]="isLoading">
-                        Cancelar
-                    </button>
-                    <button mat-raised-button color="primary" type="submit"
-                        [disabled]="transactionForm.invalid || isLoading">
-                        <mat-spinner diameter="20" *ngIf="isLoading" class="inline-block mr-2"></mat-spinner>
-                        Guardar
-                    </button>
-                </div>
+      <!-- Actions -->
+      <div class="form-actions">
+        <a routerLink="/transactions" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-submit" [disabled]="transactionForm.invalid || isLoading">
+          <mat-spinner diameter="18" *ngIf="isLoading" style="display:inline-block;vertical-align:middle;margin-right:6px"></mat-spinner>
+          <mat-icon *ngIf="!isLoading" style="font-size:18px;vertical-align:middle;margin-right:4px">save</mat-icon>
+          {{ isLoading ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
 
-                <div *ngIf="errorMessage" class="text-red-600 mt-2 text-sm">
-                    {{ errorMessage }}
-                </div>
-
-            </form>
-        </mat-card-content>
-    </mat-card>
+    </form>
+  </div>
 </div>

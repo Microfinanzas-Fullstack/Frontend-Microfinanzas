@@ -1,0 +1,224 @@
+<div class="p-6 max-w-7xl mx-auto">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Suscripciones</h1>
+      <p class="text-gray-500 text-sm mt-1">
+        {{ activeSubscriptions().length }} activas ·
+        {{ pausedSubscriptions().length }} pausadas ·
+        {{ cancelledSubscriptions().length }} canceladas
+      </p>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Nueva Suscripción
+    </button>
+  </div>
+
+  <!-- Monthly cost summary -->
+  @if (allSubscriptions().length > 0) {
+    <mat-card class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-0">
+      <mat-card-content class="py-4 flex items-center gap-4">
+        <div class="bg-blue-100 rounded-full p-3">
+          <mat-icon class="text-blue-600">account_balance_wallet</mat-icon>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 mb-0.5">Gasto mensual estimado (activas)</p>
+          <p class="text-2xl font-bold text-blue-700">
+            {{ formatCurrency(monthlyCost(), mainCurrency()) }}
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Loading state -->
+  @if (loading()) {
+    <div class="flex justify-center items-center py-16">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (error()) {
+    <mat-card class="mb-6 border border-red-200">
+      <mat-card-content class="flex items-center gap-3 py-3">
+        <mat-icon class="text-red-500">error_outline</mat-icon>
+        <span class="text-red-700 flex-1">{{ error() }}</span>
+        <button mat-stroked-button color="warn" (click)="loadSubscriptions()">Reintentar</button>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Tabs with subscription groups -->
+  @if (!loading()) {
+    <mat-tab-group animationDuration="200ms" mat-stretch-tabs="false">
+
+      <!-- ACTIVAS -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="text-green-600 mr-1">check_circle</mat-icon>
+          Activas ({{ activeSubscriptions().length }})
+        </ng-template>
+
+        @if (activeSubscriptions().length === 0) {
+          <div class="text-center py-16 text-gray-400">
+            <mat-icon class="!text-5xl block mb-3">subscriptions</mat-icon>
+            <p class="text-base">No tienes suscripciones activas</p>
+            <button mat-stroked-button color="primary" (click)="openCreateDialog()" class="mt-3">
+              Crear suscripción
+            </button>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            @for (sub of activeSubscriptions(); track sub.id) {
+              <mat-card class="subscription-card border-l-4 border-l-green-500 hover:shadow-md transition-shadow">
+                <mat-card-header>
+                  <div mat-card-avatar class="bg-green-100 rounded-full flex items-center justify-center">
+                    <mat-icon class="text-green-600">check_circle</mat-icon>
+                  </div>
+                  <mat-card-title class="!text-base font-semibold">{{ sub.name }}</mat-card-title>
+                  <mat-card-subtitle>{{ getBillingCycleLabel(sub.billingCycleDays) }}</mat-card-subtitle>
+                  <div class="ml-auto">
+                    <button mat-icon-button [matMenuTriggerFor]="activeMenu">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #activeMenu="matMenu">
+                      <button mat-menu-item (click)="pauseSubscription(sub)">
+                        <mat-icon>pause_circle_outline</mat-icon>
+                        Pausar
+                      </button>
+                      <button mat-menu-item (click)="cancelSubscription(sub)" class="text-red-600">
+                        <mat-icon class="text-red-500">cancel</mat-icon>
+                        Cancelar
+                      </button>
+                    </mat-menu>
+                  </div>
+                </mat-card-header>
+
+                <mat-card-content>
+                  @if (sub.description) {
+                    <p class="text-gray-500 text-sm mb-3">{{ sub.description }}</p>
+                  }
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-2xl font-bold text-green-700">
+                      {{ formatCurrency(sub.amount, sub.currency) }}
+                    </span>
+                    <span class="text-xs text-gray-400">/ {{ getBillingCycleLabel(sub.billingCycleDays) | lowercase }}</span>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-2">
+                    <mat-icon class="!text-xs align-middle">schedule</mat-icon>
+                    Próximo cobro: {{ sub.nextBillingDate | date:'dd/MM/yyyy' }}
+                  </p>
+                </mat-card-content>
+
+                <mat-card-actions class="flex justify-end">
+                  <button mat-button color="warn" (click)="confirmDelete(sub)">
+                    <mat-icon>delete_outline</mat-icon>
+                    Eliminar
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+        }
+      </mat-tab>
+
+      <!-- PAUSADAS -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="text-yellow-600 mr-1">pause_circle</mat-icon>
+          Pausadas ({{ pausedSubscriptions().length }})
+        </ng-template>
+
+        @if (pausedSubscriptions().length === 0) {
+          <div class="text-center py-16 text-gray-400">
+            <mat-icon class="!text-5xl block mb-3">pause_circle_outline</mat-icon>
+            <p class="text-base">No tienes suscripciones pausadas</p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            @for (sub of pausedSubscriptions(); track sub.id) {
+              <mat-card class="subscription-card border-l-4 border-l-yellow-400 hover:shadow-md transition-shadow opacity-80">
+                <mat-card-header>
+                  <div mat-card-avatar class="bg-yellow-100 rounded-full flex items-center justify-center">
+                    <mat-icon class="text-yellow-600">pause_circle</mat-icon>
+                  </div>
+                  <mat-card-title class="!text-base font-semibold">{{ sub.name }}</mat-card-title>
+                  <mat-card-subtitle>{{ getBillingCycleLabel(sub.billingCycleDays) }}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content>
+                  @if (sub.description) {
+                    <p class="text-gray-500 text-sm mb-3">{{ sub.description }}</p>
+                  }
+                  <p class="text-xl font-bold text-gray-600">
+                    {{ formatCurrency(sub.amount, sub.currency) }}
+                  </p>
+                </mat-card-content>
+
+                <mat-card-actions class="flex justify-between">
+                  <button mat-stroked-button color="primary" (click)="reactivateSubscription(sub)">
+                    <mat-icon>play_circle_outline</mat-icon>
+                    Reactivar
+                  </button>
+                  <button mat-button color="warn" (click)="confirmDelete(sub)">
+                    <mat-icon>delete_outline</mat-icon>
+                    Eliminar
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+        }
+      </mat-tab>
+
+      <!-- CANCELADAS -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="text-red-500 mr-1">cancel</mat-icon>
+          Canceladas ({{ cancelledSubscriptions().length }})
+        </ng-template>
+
+        @if (cancelledSubscriptions().length === 0) {
+          <div class="text-center py-16 text-gray-400">
+            <mat-icon class="!text-5xl block mb-3">cancel</mat-icon>
+            <p class="text-base">No tienes suscripciones canceladas</p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            @for (sub of cancelledSubscriptions(); track sub.id) {
+              <mat-card class="subscription-card border-l-4 border-l-red-300 opacity-60 hover:shadow-md transition-shadow">
+                <mat-card-header>
+                  <div mat-card-avatar class="bg-red-100 rounded-full flex items-center justify-center">
+                    <mat-icon class="text-red-500">cancel</mat-icon>
+                  </div>
+                  <mat-card-title class="!text-base font-semibold line-through text-gray-500">
+                    {{ sub.name }}
+                  </mat-card-title>
+                  <mat-card-subtitle>Cancelada</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content>
+                  <p class="text-lg font-semibold text-gray-400">
+                    {{ formatCurrency(sub.amount, sub.currency) }}
+                  </p>
+                </mat-card-content>
+
+                <mat-card-actions class="flex justify-end">
+                  <button mat-button color="warn" (click)="confirmDelete(sub)">
+                    <mat-icon>delete_outline</mat-icon>
+                    Eliminar
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+        }
+      </mat-tab>
+
+    </mat-tab-group>
+  }
+
+</div>
