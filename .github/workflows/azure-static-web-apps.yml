@@ -29,6 +29,7 @@ jobs:
           app_location: "/" # Ahora que el archivo está dentro de FrontMicrofinanzas, la ruta es la raíz del repo
           api_location: "" 
           output_location: "dist/front-microfinanzas/browser" 
+          app_build_command: "npm install --legacy-peer-deps && npm run build"
           ########################################
 
   close_pull_request_job:
