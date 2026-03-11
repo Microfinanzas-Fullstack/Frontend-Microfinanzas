@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
@@ -32,7 +33,7 @@ import {
 })
 export class SubscriptionService {
   // URL base del backend (ajustar según configuración)
-  private readonly API_URL = 'http://localhost:8080/api/subscriptions';
+  private readonly API_URL = `${environment.apiUrlBase}/api/subscriptions`;
 
   /**
    * BehaviorSubject que mantiene el estado de todas las suscripciones

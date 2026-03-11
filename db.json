@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "password123",
+      "email": "admin@example.com",
+      "role": "ADMIN"
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": 1,
+      "userId": 1,
+      "plan": "Premium",
+      "status": "ACTIVE",
+      "startDate": "2024-01-01"
+    }
+  ],
+  "transactions": [
+    {
+      "id": 1,
+      "userId": 1,
+      "amount": 150.0,
+      "type": "INCOME",
+      "date": "2024-03-10",
+      "description": "Pago inicial"
+    }
+  ],
+  "auth": {
+    "login": {
+      "token": "fake-jwt-token-123456",
+      "refreshToken": "fake-refresh-token-789"
+    }
+  }
+}
