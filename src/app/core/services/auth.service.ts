@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -31,7 +32,7 @@ import {
 })
 export class AuthService {
   // URL base del backend (ajustar según configuración)
-  private readonly API_URL = 'http://localhost:8080/api/auth';
+  private readonly API_URL = `${environment.apiUrlBase}/api/auth`;
 
   // Claves para localStorage
   private readonly TOKEN_KEY = 'auth_token';

@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, map } from 'rxjs';
@@ -33,7 +34,7 @@ import {
 })
 export class TransactionService {
   // URL base del backend (ajustar según configuración)
-  private readonly API_URL = 'http://localhost:8080/api/transactions';
+  private readonly API_URL = `${environment.apiUrlBase}/api/transactions`;
 
   /**
    * BehaviorSubject que mantiene el estado de todas las transacciones
