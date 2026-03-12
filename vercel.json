@@ -1,6 +1,5 @@
 {
   "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm run build",
-  "framework": "angular",
-  "outputDirectory": "dist/front-microfinanzas/browser"
+  "outputDirectory": "dist/front-microfinanzas"
 }
