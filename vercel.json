@@ -1,5 +1,8 @@
 {
   "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/front-microfinanzas"
+  "outputDirectory": "dist/front-microfinanzas",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
