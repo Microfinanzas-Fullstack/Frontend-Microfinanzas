@@ -1,59 +1,55 @@
-# FrontMicrofinanzas
+# 💎 FrontMicrofinanzas - La cara de tus ahorros
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+¡Bienvenido a la interfaz de **Microfinanzas**! Esta es una aplicación moderna, rápida e intuitiva construida con **Angular 19** para ayudarte a tomar el control total de tu dinero.
 
-## Development server
+Diseñamos esta experiencia pensando en el usuario: colores claros, flujos sencillos y feedback inmediato.
 
-To start a local development server, run:
+## 🚀 ¿Qué puedes hacer aquí?
 
+*   **Dashboard Visual:** Un resumen rápido de tus ingresos y gastos.
+*   **Gestión de Transacciones:** Registra cada movimiento con categorías y descripciones claras.
+*   **Pagos Recurrentes:** No vuelvas a olvidar una suscripción. Contrólalas todas desde un solo lugar.
+*   **Seguridad Transparente:** Manejo automático de sesiones con JWT y Guards de protección.
+
+---
+
+## 🛠️ Guía de Inicio Rápido
+
+### 1. Prepara las herramientas
+Asegúrate de tener [Node.js](https://nodejs.org/) instalado. Luego, instala las dependencias:
 ```bash
-ng serve
+npm install
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+### 2. ¡Dale vida al proyecto!
+Para lanzar el servidor de desarrollo:
 ```bash
-ng generate component component-name
+npm start
 ```
+Abre tu navegador en 👉 `http://localhost:4200/`. ¡Y listo! Ya puedes empezar a navegar.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## 🎨 Detalles Técnicos (Para el equipo)
 
-## Building
+*   **Angular 19 & Tailwind CSS:** Estética moderna y componentes reactivos de alto rendimiento.
+*   **Arquitectura Limpia:** Separamos todo en `core`, `features` y `shared` para que el proyecto pueda crecer sin caos.
+*   **SSR Ready:** Preparado para renderizado en el servidor si lo necesitas.
+*   **Vitest:** Pruebas unitarias rápidas y fiables.
 
-To build the project run:
+## 📁 Estructura del Proyecto
+*   `src/app/core`: El corazón (servicios de autenticación, interceptores, modelos globales).
+*   `src/app/features`: Los módulos funcionales (Login, Dashboard, Transacciones).
+*   `src/app/shared`: Componentes reutilizables como nuestra barra de navegación.
 
-```bash
-ng build
-```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 🏗️ Construcción y Pruebas
 
-## Running unit tests
+*   **Build:** `npm run build` para generar los archivos listos para producción.
+*   **Tests:** `npm test` para asegurar que todo siga funcionando como reloj suizo.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+---
+**Desarrollado con ❤️ por Silva Industries.**
+"Tus finanzas, ahora más claras que nunca."
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
